@@ -6,4 +6,12 @@ public class Customer {
     String city;
     String state;
     String zip;
+
+    public Customer () {}
+
+    public void getName () {}
+
+    public void getAddress() {}
+
+    public void setAddress() {}
 }
