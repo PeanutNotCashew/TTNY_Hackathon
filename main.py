@@ -5,15 +5,34 @@ apiKey = '902f8009375f89ba96ab427769c38f90'
 customers = []
 
 class Customer:
-    customerID;
-    accounts[];
+    customerID = 0;
+    accounts = [];
 
-    def __init__(self, customerID){
+    def __init__(self, customerID):
         self.customerID = customerID
-    }
+
+    def addAccount() :
+        url = 'http://api.nessieisreal.com/customers/{}/accounts?key={}'.format(customerID, apiKey)
+
+        # Account information
+        account = {
+            "type": "Credit Card",
+            "nickname": "",
+            "rewards": 0,
+            "balance": 0,
+            "account_number": "string"
+        }
+
+        r = requests.post(
+            url,
+            data = json.dumps(account),
+            headers = {'content-type':'application/json'}
+        )
 
 def createCustomer():
 	url = 'http://api.nessieisreal.com/customers?key={}'.format(apiKey)
+
+	# Customer information
 	address = {
 		"street_number":"8000",
 		"street_name":"Utopia Pkwy",
@@ -26,14 +45,20 @@ def createCustomer():
 		"last_name":"Doe",
 		"address":address
 	}
-	response = requests.post(
+
+	# Posts to API
+	r = requests.post(
 		url,
 		data = json.dumps(customer),
 		headers = {'content-type':'application/json'}
 	)
 	
-	if response.status_code == 201:
-		print('account created')
-		print(response)
+	# Processes response
+	if r.status_code == 201:
+		r_dict = r.json()
+		print(r_dict['message'])
+        # Gets ID from response & creates object
+		customerID = r_dict['objectCreated']['_id']
+		customers.append(Customer(customerID))
 
 createCustomer()
