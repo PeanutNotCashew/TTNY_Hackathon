@@ -2,46 +2,47 @@ import requests
 import json
 
 apiKey = '902f8009375f89ba96ab427769c38f90'
-customers = []
+customerList = []
 
 class Customer:
-    customerID = 0;
-    accounts = [];
+		customerID = 0;
+		accounts = [];
+	
+		def __init__(self, customerID, nick):
+				self.customerID = customerID
+				self.nickname = nick
 
-    def __init__(self, customerID):
-        self.customerID = customerID
+		def addAccount(self) :
+				url = 'http://api.nessieisreal.com/customers/{}/accounts?key={}'.format(self.customerID, apiKey)
 
-    def addAccount() :
-        url = 'http://api.nessieisreal.com/customers/{}/accounts?key={}'.format(customerID, apiKey)
+				# Account information
+				account = {
+						"type": "Credit Card",
+						"nickname": "Nick",
+						"rewards": 0,
+						"balance": 0,
+						"account_number": "1"
+				}
 
-        # Account information
-        account = {
-            "type": "Credit Card",
-            "nickname": "",
-            "rewards": 0,
-            "balance": 0,
-            "account_number": "string"
-        }
+				# Post to API
+				r = requests.post(
+						url,
+						data = json.dumps(account),
+						headers = {'content-type':'application/json'}
+				)
 
-        # Post to API
-        r = requests.post(
-            url,
-            data = json.dumps(account),
-            headers = {'content-type':'application/json'}
-        )
+				# Processes response
+				if r.status_code == 201:
+						r_dict = r.json()
+						print(r_dict['message'])
+						# Gets ID from response & creates object
+						accountID = r_dict['objectCreated']['_id']
+						self.accounts.append(accountID)
+				else:
+						print("Account creation failed:")
+						print(r.status_code)
 
-        # Processes response
-        if r.status_code == 201:
-            r_dict = r.json()
-            print(r_dict['message'])
-            # Gets ID from response & creates object
-            accountID = r_dict['objectCreated']['_id']
-            accounts.append(accountID)
-        else:
-            print(Account creation failed:)
-            print(r.status_code)
-
-def createCustomer():
+def createCustomer(fname, lname):
 	url = 'http://api.nessieisreal.com/customers?key={}'.format(apiKey)
 
 	# Customer information
@@ -53,8 +54,8 @@ def createCustomer():
 		"zip":"11372"
 	}
 	customer = {
-		"first_name":"John",
-		"last_name":"Doe",
+		"first_name":fname,
+		"last_name":lname,
 		"address":address
 	}
 
@@ -69,11 +70,15 @@ def createCustomer():
 	if r.status_code == 201:
 		r_dict = r.json()
 		print(r_dict['message'])
-        # Gets ID from response & creates object
+		# Gets ID from response & creates object
 		customerID = r_dict['objectCreated']['_id']
-		customers.append(Customer(customerID))
-    else:
-        print(Account creation failed:)
-        print(r.status_code)
+		customerList.append(Customer(customerID, fname))
+	else:
+		print("Customer creation failed:")
+		print(r.status_code)
 
-createCustomer()
+createCustomer("John", "Doe")
+customerList[0].addAccount()
+print(customerList[0].customerID)
+for i in customerList:
+	print(i.accounts)
