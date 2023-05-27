@@ -21,7 +21,6 @@ class Customer:
 						"nickname": "Nick",
 						"rewards": 0,
 						"balance": 0,
-						"account_number": "1"
 				}
 
 				# Post to API
@@ -77,8 +76,16 @@ def createCustomer(fname, lname):
 		print("Customer creation failed:")
 		print(r.status_code)
 
+def deleteData(dataType):
+	url = 'http://api.nessieisreal.com/data?type={}&key={}'.format(dataType, apiKey)
+	r = requests.delete(url)
+	if r.status_code == 204:
+		print(dataType + " deleted")
+
 createCustomer("John", "Doe")
 customerList[0].addAccount()
-print(customerList[0].customerID)
-for i in customerList:
-	print(i.accounts)
+
+# Clears data
+deleteData('Accounts')
+deleteData('Customers')
+
