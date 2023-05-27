@@ -23,11 +23,23 @@ class Customer:
             "account_number": "string"
         }
 
+        # Post to API
         r = requests.post(
             url,
             data = json.dumps(account),
             headers = {'content-type':'application/json'}
         )
+
+        # Processes response
+        if r.status_code == 201:
+            r_dict = r.json()
+            print(r_dict['message'])
+            # Gets ID from response & creates object
+            accountID = r_dict['objectCreated']['_id']
+            accounts.append(accountID)
+        else:
+            print(Account creation failed:)
+            print(r.status_code)
 
 def createCustomer():
 	url = 'http://api.nessieisreal.com/customers?key={}'.format(apiKey)
@@ -60,5 +72,8 @@ def createCustomer():
         # Gets ID from response & creates object
 		customerID = r_dict['objectCreated']['_id']
 		customers.append(Customer(customerID))
+    else:
+        print(Account creation failed:)
+        print(r.status_code)
 
 createCustomer()
