@@ -6,53 +6,20 @@ customerList = []
 merchantList = []
 
 class Customer:
-	accountList = []
-
-	def __init__(self, name, customerID):
+	def __init__(self, name, customerID, accountID):
 		self.__customerID = customerID
 		self.nickname = name
-
-	def addAccount(self, cardType, name) :
-		url = 'http://api.nessieisreal.com/customers/{}/accounts?key={}'.format(self.__customerID, apiKey)
-
-		# Account information
-		account = {
-			"type": cardType,
-			"nickname": name,
-			"rewards": 0,
-			"balance": 0
-		}
-
-		# Post to API
-		r = requests.post(
-			url,
-			data = json.dumps(account),
-			headers = {'content-type':'application/json'}
-		)
-
-		# Processes response
-		if r.status_code == 201:
-			r_dict = r.json()
-			print(r_dict['message'])
-			# Gets ID from response & creates object
-			accountID = r_dict['objectCreated']['_id']
-			self.accountList.append(Account(accountID, name))
-		else:
-			print("Account creation failed:")
-			print(r.status_code)
-
-	def getID(self):
-		return self.__customerID
-
-class Account:
-	__accountID = 0
-	budgets = {}
-
-	def __init__ (self, accountID, name):
 		self.__accountID = accountID
-		self.nickname = name
-	
-	def pushDeposit(self, amount):
+
+		# Load budget
+		try:
+			with open('budget.json', 'r') as file:
+				budgets = json.load(file)
+		except FileNotFoundError:
+			budgets = {}
+		self.budgets = budgets
+
+	def postDeposit(self, amount):
 		url = 'http://api.nessieisreal.com/accounts/{}/deposits?key={}'.format(self.__accountID, apiKey)
 
 		deposit = {
@@ -68,35 +35,11 @@ class Account:
 		)
 
 		# Processes response
-		if r.status_code == 201:
-			r_dict = r.json()
-		else:
-			print("Purchase failed:")
+		if r.status_code != 201:
+			print("Deposit failed:")
 			print(r.status_code)
 
-	def pushWithdrawal(self, amount):
-		url = 'http://api.nessieisreal.com/accounts/{}/withdrawals?key={}'.format(self.__accountID, apiKey)
-
-		withdrawal = {
-			"medium": "balance",
-			"amount": amount
-		}
-
-		# Post to API
-		r = requests.post(
-			url,
-			data = json.dumps(withdrawal),
-			headers = {'content-type':'application/json'}
-		)
-
-		# Processes response
-		if r.status_code == 201:
-			r_dict = r.json()
-		else:
-			print("Purchase failed:")
-			print(r.status_code)
-
-	def pushPurchase(self, merchantID, amount):
+	def postPurchase(self, merchantID, amount):
 		url = 'http://api.nessieisreal.com/accounts/{}/purchases?key={}'.format(self.__accountID, apiKey)
 
 		purchase = {
@@ -114,31 +57,46 @@ class Account:
 
 		# Processes response
 		if r.status_code == 201:
-			r_dict = r.json()
+			url = 'http://api.nessieisreal.com/merchants/{}?key={}'.format(merchantID, apiKey)
+
+			# Post to API
+			r = requests.get(url)
+			if r.status_code == 200:
+				r_dict = r.json()
+				category = r_dict['category']
+				if category in self.budgets:
+					limit = self.budgets[category]
+					if amount > limit:
+						print(f'Warning: You are exceeding the budget limit for {category}.')
+				else:
+					print(f'Warning: No budget limit set for category {category}.')
 		else:
 			print("Purchase failed:")
 			print(r.status_code)
 
-	def addBudget(self, category, amount):
-		self.budgets.update({category:amount})		
-
-	def printAccount(self):
+	def getBalance(self):
 		url = 'http://api.nessieisreal.com/accounts/{}?key={}'.format(self.__accountID, apiKey)
-
 		# Post to API
 		r = requests.get(url)
-
 		# Processes response
 		if r.status_code == 200:
 			r_dict = r.json()
-			print("--" + self.nickname + "--")
 			print("Balance: " + str(r_dict['balance']))
-			print("Budgets: ")
-			for k,v in self.budgets.items():
-				print(k + "" + str(v))
 		else:
-			print("Representation failed:")
+			print(r.text)
+			print("Get balance failed:")
 			print(r.status_code)
+
+	def updateBudget(self, category, limit):
+		if category in self.budgets:
+			self.budgets[category] = limit
+		else:
+			newBudget = {category:limit}
+			self.budgets.update(newBudget)
+
+	def saveBudget(self):
+		with open('budget.json', 'w') as file:
+			json.dump(self.budgets, file)
 
 class Merchant:
 	def __init__(self, name, merchantID):
@@ -220,10 +178,41 @@ def createCustomer(fname, lname):
 		print(r_dict['message'])
 		# Gets ID from response & creates object
 		customerID = r_dict['objectCreated']['_id']
-		customerList.append(Customer(fullName, customerID))
+		accountID = createAccount(customerID)
+		if accountID != "failed":
+			customerList.append(Customer(fullName, customerID, accountID))
+			print("Your customer ID is " + customerID)
+			print("Your account ID is " + accountID)
 	else:
 		print("Customer creation failed:")
 		print(r.status_code)
+
+def createAccount(customerID):
+	# Create banking account
+	url = 'http://api.nessieisreal.com/customers/{}/accounts?key={}'.format(customerID, apiKey)
+	# Account information
+	account = {
+		"type": "Checking",
+		"nickname": "Checking",
+		"rewards": 0,
+		"balance": 100
+	}
+	# Post to API
+	r = requests.post(
+		url,
+		data = json.dumps(account),
+		headers = {'content-type':'application/json'}
+	)
+	# Processes response
+	if r.status_code == 201:
+		r_dict = r.json()
+		print(r_dict['message'])
+		# Gets ID from response & creates object
+		return r_dict['objectCreated']['_id']
+	else:
+		print("Account creation failed:")
+		print(r.status_code)
+		return "failed"
 
 def deleteData(dataType):
 	url = 'http://api.nessieisreal.com/data?type={}&key={}'.format(dataType, apiKey)
