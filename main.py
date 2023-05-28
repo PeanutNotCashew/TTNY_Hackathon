@@ -1,5 +1,6 @@
 import methods
 
+
 def selectCustomer():
 	j = 1
 	for i in methods.customerList:
@@ -9,6 +10,7 @@ def selectCustomer():
 	j = int(input("Input number of user: "))
 
 	return methods.customerList[j - 1]
+
 
 def selectAccount(user):
 	i = 1
@@ -20,7 +22,8 @@ def selectAccount(user):
 
 	return user.accountList[j - 1]
 
-def selectMerchant()
+
+def selectMerchant():
 	j = 1
 	for i in methods.merchantList:
 		print(str(j) + ". " + i.nickname)
@@ -29,6 +32,7 @@ def selectMerchant()
 	j = int(input("Input number of merchant: "))
 
 	return methods.merchantList[j - 1]
+
 
 def accountActions(account):
 	print("1. Make a purchase\n2. Make a deposit\n3. Make a withdrawal")
@@ -45,6 +49,7 @@ def accountActions(account):
 		amount = int(input("Amount withdrawing: "))
 		account.pushWithdrawal(amount)
 
+
 # Main Code
 methods.createCustomer("John", "Doe")
 methods.customerList[0].addAccount("Credit Card", "Test Credit")
@@ -53,7 +58,6 @@ methods.createMerchant("H&M", "Clothing")
 currentUser = selectCustomer()
 currentAccount = selectAccount(currentUser)
 accountActions(currentAccount)
-print(currentAccount)
 
 # Clears data
 methods.deleteData('Accounts')

@@ -117,8 +117,8 @@ class Account:
 			print(r.status_code)
 
 class Merchant:
-	def __init__(self, merchantID, name):
-		self.name = name
+	def __init__(self, name, merchantID):
+		self.nickname = name
 		self.__merchantID = merchantID
 
 	def getID(self):
@@ -145,7 +145,7 @@ def createMerchant(name, category):
 		print(r_dict['message'])
 		# Gets ID from response & creates object
 		merchantID = r_dict['objectCreated']['_id']
-		merchantList.append(Merchant(name, fname))
+		merchantList.append(Merchant(name, merchantID))
 	else:
 		print("Merchant creation failed:")
 		print(r.status_code)
