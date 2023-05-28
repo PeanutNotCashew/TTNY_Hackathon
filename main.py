@@ -4,6 +4,7 @@ import sys
 
 def selectCustomer():
 	j = 1
+	print("\n")
 	for i in methods.customerList:
 		print(str(j) + ". " + i.nickname)
 		j += 1
@@ -14,6 +15,7 @@ def selectCustomer():
 
 def selectMerchant():
 	j = 1
+	print("\n")
 	for i in methods.merchantList:
 		print(str(j) + ". " + i.nickname)
 		j += 1
@@ -35,6 +37,7 @@ def accountActions(customer):
 		customer.postDeposit(amount)
 	elif i == 3:
 		customer.getBalance()
+		customer.getBudget()
 	elif i == 4:
 		category = input("Category: ")
 		limit = int(input("Limit: "))

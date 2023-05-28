@@ -17,7 +17,6 @@ class Customer:
 				budgets = json.load(file)
 		except FileNotFoundError:
 			budgets = {}
-		self.budgets = budgets
 
 	def postDeposit(self, amount):
 		url = 'http://api.nessieisreal.com/accounts/{}/deposits?key={}'.format(self.__accountID, apiKey)
@@ -86,6 +85,11 @@ class Customer:
 			print(r.text)
 			print("Get balance failed:")
 			print(r.status_code)
+
+	def getBudget(self):
+		print("Budget:")
+		for k,v in self.budgets.items():
+			print(k,v)
 
 	def updateBudget(self, category, limit):
 		if category in self.budgets:
