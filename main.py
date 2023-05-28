@@ -1,6 +1,5 @@
 import methods
 
-
 def selectCustomer():
 	j = 1
 	for i in methods.customerList:
@@ -35,7 +34,7 @@ def selectMerchant():
 
 
 def accountActions(account):
-	print("1. Make a purchase\n2. Make a deposit\n3. Make a withdrawal")
+	print("1. Make a purchase\n2. Make a deposit\n3. Make a withdrawal\n4. Check account information")
 	i = int(input("Input number of action: "))
 
 	if i == 1:
@@ -51,10 +50,6 @@ def accountActions(account):
 
 
 # Main Code
-methods.createCustomer("John", "Doe")
-methods.customerList[0].addAccount("Credit Card", "Test Credit")
-methods.createMerchant("H&M", "Clothing")
-
 currentUser = selectCustomer()
 currentAccount = selectAccount(currentUser)
 accountActions(currentAccount)

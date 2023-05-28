@@ -7,9 +7,14 @@ merchantList = []
 
 class Customer:
 	accountList = []
+	budgets = {}
+
 	def __init__(self, name, customerID):
 		self.__customerID = customerID
 		self.nickname = name
+	
+	def addBudget(self, category, amount):
+		budgets.update({category:amount})
 
 	def addAccount(self, cardType, name) :
 		url = 'http://api.nessieisreal.com/customers/{}/accounts?key={}'.format(self.__customerID, apiKey)
