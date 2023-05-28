@@ -139,7 +139,6 @@ def createMerchant(name, category):
 	# Processes response
 	if r.status_code == 201:
 		r_dict = r.json()
-		print(r_dict['message'])
 		# Gets ID from response & creates object
 		merchantID = r_dict['objectCreated']['_id']
 		merchantList.append(Merchant(name, merchantID))
@@ -147,7 +146,7 @@ def createMerchant(name, category):
 		print("Merchant creation failed:")
 		print(r.status_code)
 
-def createCustomer(fname, lname):
+def createCustomer(fname, lname, amount):
 	url = 'http://api.nessieisreal.com/customers?key={}'.format(apiKey)
 	fullName = fname + " " + lname
 
@@ -175,19 +174,16 @@ def createCustomer(fname, lname):
 	# Processes response
 	if r.status_code == 201:
 		r_dict = r.json()
-		print(r_dict['message'])
 		# Gets ID from response & creates object
 		customerID = r_dict['objectCreated']['_id']
-		accountID = createAccount(customerID)
+		accountID = createAccount(customerID, amount)
 		if accountID != "failed":
 			customerList.append(Customer(fullName, customerID, accountID))
-			print("Your customer ID is " + customerID)
-			print("Your account ID is " + accountID)
 	else:
 		print("Customer creation failed:")
 		print(r.status_code)
 
-def createAccount(customerID):
+def createAccount(customerID, amount):
 	# Create banking account
 	url = 'http://api.nessieisreal.com/customers/{}/accounts?key={}'.format(customerID, apiKey)
 	# Account information
@@ -195,7 +191,7 @@ def createAccount(customerID):
 		"type": "Checking",
 		"nickname": "Checking",
 		"rewards": 0,
-		"balance": 100
+		"balance": amount
 	}
 	# Post to API
 	r = requests.post(

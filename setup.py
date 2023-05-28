@@ -1,7 +1,9 @@
 import methods
 
 # Customers
-methods.createCustomer("John", "Doe")
+methods.createCustomer("John", "Doe", 100)
+methods.createCustomer("Mary", "Anne", 620)
+
 
 # Merchants
 methods.createMerchant("H&M", "Clothing")

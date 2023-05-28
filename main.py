@@ -51,6 +51,11 @@ def accountActions(customer):
 
 	accountActions(customer)
 
+# Not implemented
+def login():
+	customerID = input("User ID: ")
+	password = input("Password: ")
+
 # Main Code
 customer = selectCustomer()
 accountActions(customer)
