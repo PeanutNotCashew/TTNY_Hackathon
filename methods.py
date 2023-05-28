@@ -7,14 +7,10 @@ merchantList = []
 
 class Customer:
 	accountList = []
-	budgets = {}
 
 	def __init__(self, name, customerID):
 		self.__customerID = customerID
 		self.nickname = name
-	
-	def addBudget(self, category, amount):
-		budgets.update({category:amount})
 
 	def addAccount(self, cardType, name) :
 		url = 'http://api.nessieisreal.com/customers/{}/accounts?key={}'.format(self.__customerID, apiKey)
@@ -50,6 +46,8 @@ class Customer:
 
 class Account:
 	__accountID = 0
+	budgets = {}
+
 	def __init__ (self, accountID, name):
 		self.__accountID = accountID
 		self.nickname = name
@@ -121,6 +119,27 @@ class Account:
 			print("Purchase failed:")
 			print(r.status_code)
 
+	def addBudget(self, category, amount):
+		self.budgets.update({category:amount})		
+
+	def printAccount(self):
+		url = 'http://api.nessieisreal.com/accounts/{}?key={}'.format(self.__accountID, apiKey)
+
+		# Post to API
+		r = requests.get(url)
+
+		# Processes response
+		if r.status_code == 200:
+			r_dict = r.json()
+			print("--" + self.nickname + "--")
+			print("Balance: " + str(r_dict['balance']))
+			print("Budgets: ")
+			for k,v in self.budgets.items():
+				print(k + "" + str(v))
+		else:
+			print("Representation failed:")
+			print(r.status_code)
+
 class Merchant:
 	def __init__(self, name, merchantID):
 		self.nickname = name
@@ -128,6 +147,21 @@ class Merchant:
 
 	def getID(self):
 		return self.__merchantID
+	
+	def getCategory(self):
+		url = 'http://api.nessieisreal.com/merchants/{}?key={}'.format(self.__merchantID, apiKey)
+
+		r = requests.get(url)
+
+		# Processes response
+		if r.status_code == 201:
+			r_dict = r.json()
+			print(r_dict['message'])
+			# Gets ID from response & creates object
+			return r_dict['category']
+		else:
+			print("Merchant ID retrieval failed:")
+			print(r.status_code)
 
 def createMerchant(name, category):
 	url = 'http://api.nessieisreal.com/merchants?key={}'.format(apiKey)

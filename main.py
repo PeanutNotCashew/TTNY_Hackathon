@@ -1,4 +1,5 @@
 import methods
+import setup
 
 def selectCustomer():
 	j = 1
@@ -10,7 +11,6 @@ def selectCustomer():
 
 	return methods.customerList[j - 1]
 
-
 def selectAccount(user):
 	i = 1
 	for j in user.accountList:
@@ -21,7 +21,6 @@ def selectAccount(user):
 
 	return user.accountList[j - 1]
 
-
 def selectMerchant():
 	j = 1
 	for i in methods.merchantList:
@@ -31,7 +30,6 @@ def selectMerchant():
 	j = int(input("Input number of merchant: "))
 
 	return methods.merchantList[j - 1]
-
 
 def accountActions(account):
 	print("1. Make a purchase\n2. Make a deposit\n3. Make a withdrawal\n4. Check account information")
@@ -47,6 +45,8 @@ def accountActions(account):
 	elif i == 3:
 		amount = int(input("Amount withdrawing: "))
 		account.pushWithdrawal(amount)
+	elif i == 4:
+		account.printAccount()
 
 
 # Main Code
@@ -55,5 +55,6 @@ currentAccount = selectAccount(currentUser)
 accountActions(currentAccount)
 
 # Clears data
-methods.deleteData('Accounts')
-methods.deleteData('Customers')
+dataTypes = ['Accounts', 'Bills', 'Customers', 'Deposits', 'Loans', 'Purchases', 'Transfers', 'Withdrawals']
+for i in dataTypes:
+	methods.deleteData(i)
