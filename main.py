@@ -1,5 +1,6 @@
 import methods
 import setup
+import sys
 
 def selectCustomer():
 	j = 1
@@ -11,16 +12,6 @@ def selectCustomer():
 
 	return methods.customerList[j - 1]
 
-def selectAccount(user):
-	i = 1
-	for j in user.accountList:
-		print(str(i) + ". " + j.nickname)
-		i += 1
-
-	j = int(input("Input number of account: "))
-
-	return user.accountList[j - 1]
-
 def selectMerchant():
 	j = 1
 	for i in methods.merchantList:
@@ -31,30 +22,35 @@ def selectMerchant():
 
 	return methods.merchantList[j - 1]
 
-def accountActions(account):
-	print("1. Make a purchase\n2. Make a deposit\n3. Make a withdrawal\n4. Check account information")
+def accountActions(customer):
+	print("1. Make a purchase\n2. Make a deposit\n3. Check account information\n4. Create budget\n5. Quit")
 	i = int(input("Input number of action: "))
 
 	if i == 1:
 		merchant = selectMerchant()
 		amount = int(input("Amount Spent: "))
-		account.pushPurchase(merchant.getID(), amount)
+		customer.postPurchase(merchant.getID(), amount)
 	elif i == 2:
 		amount = int(input("Amount Depositing: "))
-		account.pushDeposit(amount)
+		customer.postDeposit(amount)
 	elif i == 3:
-		amount = int(input("Amount withdrawing: "))
-		account.pushWithdrawal(amount)
+		customer.getBalance()
 	elif i == 4:
-		account.printAccount()
+		category = input("Category: ")
+		limit = int(input("Limit: "))
+		customer.updateBudget(category, limit)
+	elif i == 5:
+		# Save budgeting data
+		customer.saveBudget()
+		# Clear data
+		dataTypes = ['Accounts', 'Bills', 'Customers', 'Deposits', 'Loans', 'Purchases', 'Transfers', 'Withdrawals']
+		for i in dataTypes:
+			methods.deleteData(i)
+		# Delete data
+		sys.exit()
 
+	accountActions(customer)
 
 # Main Code
-currentUser = selectCustomer()
-currentAccount = selectAccount(currentUser)
-accountActions(currentAccount)
-
-# Clears data
-dataTypes = ['Accounts', 'Bills', 'Customers', 'Deposits', 'Loans', 'Purchases', 'Transfers', 'Withdrawals']
-for i in dataTypes:
-	methods.deleteData(i)
+customer = selectCustomer()
+accountActions(customer)
