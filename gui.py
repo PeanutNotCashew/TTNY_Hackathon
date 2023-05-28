@@ -11,7 +11,7 @@ from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"/Users/laylahmcd/ttny/build/assets/frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"")
 
 
 def relative_to_assets(path: str) -> Path:
@@ -115,5 +115,5 @@ button_2.place(
     width=98.0,
     height=23.0
 )
-window.resizable(False, False)
+window.resizable(True, True)
 window.mainloop()
